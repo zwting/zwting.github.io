@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/fav_hd.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon_32x32.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon_16x16.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/favicon_32x32.png?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="数学,图形学," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="1.四元数的记法一个四元数包含一个标量和一个3D分量, 通常标量分量记为w, 向量分量记为v或者分开的x, y, z。这两种记法可以用如下的形式来表示:  $[w, v]$$[w, (x, y, z)]$  2.复数 提示： 学习图形学的过程中，数学是在所难免的，所以，尽力去理解吧   让我们先从复数说起吧   2.1复数复数对$(a,b)$定义了数$a + bi$, i 是所谓的虚数部分, 满足">
+<meta name="keywords" content="数学,图形学">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Quaternion学习">
+<meta property="og:url" content="http://www.zuowting.top/2018/2018/Quaternion学习.html">
+<meta property="og:site_name" content="有想法更要有行动">
+<meta property="og:description" content="1.四元数的记法一个四元数包含一个标量和一个3D分量, 通常标量分量记为w, 向量分量记为v或者分开的x, y, z。这两种记法可以用如下的形式来表示:  $[w, v]$$[w, (x, y, z)]$  2.复数 提示： 学习图形学的过程中，数学是在所难免的，所以，尽力去理解吧   让我们先从复数说起吧   2.1复数复数对$(a,b)$定义了数$a + bi$, i 是所谓的虚数部分, 满足">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-08-01T11:50:31.124Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Quaternion学习">
+<meta name="twitter:description" content="1.四元数的记法一个四元数包含一个标量和一个3D分量, 通常标量分量记为w, 向量分量记为v或者分开的x, y, z。这两种记法可以用如下的形式来表示:  $[w, v]$$[w, (x, y, z)]$  2.复数 提示： 学习图形学的过程中，数学是在所难免的，所以，尽力去理解吧   让我们先从复数说起吧   2.1复数复数对$(a,b)$定义了数$a + bi$, i 是所谓的虚数部分, 满足">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":true,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.zuowting.top/2018/2018/Quaternion学习.html"/>
+
+
+
+
+
+  <title>Quaternion学习 | 有想法更要有行动</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">有想法更要有行动</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">事在人为</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.zuowting.top/2018/2018/Quaternion学习.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="zwting">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="有想法更要有行动">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Quaternion学习</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-02T15:26:00+08:00">
+                2018-07-02
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于&#58;</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2018-08-01T19:50:31+08:00">
+                2018-08-01
+              </time>
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/2018/Quaternion学习.html#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/2018/Quaternion学习.html" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h4 id="1-四元数的记法"><a href="#1-四元数的记法" class="headerlink" title="1.四元数的记法"></a>1.四元数的记法</h4><p>一个四元数包含一个标量和一个3D分量, 通常标量分量记为<strong>w</strong>, 向量分量记为<strong>v</strong>或者分开的x, y, z。这两种记法可以用如下的形式来表示:</p>
+<blockquote>
+<p>$[w, v]$<br>$[w, (x, y, z)]$</p>
+</blockquote>
+<h4 id="2-复数"><a href="#2-复数" class="headerlink" title="2.复数"></a>2.复数</h4><blockquote>
+<p>提示： 学习图形学的过程中，数学是在所难免的，所以，尽力去理解吧</p>
+</blockquote>
+<blockquote>
+<p>让我们先从复数说起吧</p>
+</blockquote>
+<ul>
+<li><h5 id="2-1复数"><a href="#2-1复数" class="headerlink" title="2.1复数"></a>2.1复数</h5>复数对$(a,b)$定义了数$a + bi$, i 是所谓的虚数部分, 满足$i^2 = -1: a $称为实部: b 称为虚部。任意实数k都可以表示为复数(令虚部为0即可)$(k,0) = k + 0i$。</li>
+<li><h5 id="2-2-复数的加法、减法和乘法"><a href="#2-2-复数的加法、减法和乘法" class="headerlink" title="2.2 复数的加法、减法和乘法"></a>2.2 复数的加法、减法和乘法</h5><p>加法： $(a + bi) + (c + di) = (a + c) + (b + d)i$<br>减法： $(a + bi) - (c + di) = (a - c) + (b - d)i$<br>乘法： $\begin{aligned}(a + bi)(c + di) &amp;= ac + adi + bci + bdi^2 \\<br>&amp;= ac + (ad + bc)i + bd(-1)  \\<br>&amp;= (ac - bd) + (ad + bc)i\end{aligned}$</p>
+</li>
+<li><h5 id="2-3-共轭复数"><a href="#2-3-共轭复数" class="headerlink" title="2.3 共轭复数"></a>2.3 共轭复数</h5><p>令复数的虚部变负，可以得到复数的<strong>共轭</strong>, 记法如下:<br>$p = (a + bi)$<br>$p^* = (a - bi)$</p>
+</li>
+<li><h5 id="2-4-求复数的模"><a href="#2-4-求复数的模" class="headerlink" title="2.4 求复数的模"></a>2.4 求复数的模</h5><p>$\left\| p \right\| = \sqrt{pp^*}$<br>$\begin{aligned}\left\| a + bi \right\| &amp;= \sqrt{(a + bi) (a + bi)^\ast } \\<br>&amp;= \sqrt{(a + bi)(a - bi)} \\<br>&amp;= \sqrt{a^2 - (bi)^2 - abi + abi} \\<br>&amp;= \sqrt{a^2 + b^2}<br>\end{aligned}$</p>
+</li>
+</ul>
+<h4 id="3-四元数"><a href="#3-四元数" class="headerlink" title="3.四元数"></a>3.四元数</h4><blockquote>
+<p>简单介绍了下复数的基本运算，接下来我们来看四元数</p>
+</blockquote>
+<ul>
+<li><h5 id="3-1-四元数的介绍"><a href="#3-1-四元数的介绍" class="headerlink" title="3.1 四元数的介绍"></a>3.1 四元数的介绍</h5>爱尔兰数学家William Hamilton多年来一直致力于寻找一种方法将复数从2D扩展到3D。开始他认为新的复数应该有一个实部和两个虚部而，Hamilton一直没有办法创造出一种有两个虚部的有意义的复数。直到1843年，在赴皇家爱尔兰学院演讲的路上，他突然意识到应该有三个虚部而非两个。这样，四元数就诞生了。<br>四元数扩展了复数系统，它使用三个虚部$i, j, k$。他们有如下关系：<br>$<br>i^2 = j^2 = k^2 = -1 \\<br>ij = k, ij = -k \\<br>jk = i, kj = -i \\<br>ki = j, ik = -j<br>$</li>
+<li><h5 id="3-2-四元数来表示旋转"><a href="#3-2-四元数来表示旋转" class="headerlink" title="3.2 四元数来表示旋转"></a>3.2 四元数来表示旋转</h5><p>欧拉证明了一个旋转序列等价于单个旋转。因此，3D中的任意角位移都可以表示为绕单一轴的单一旋转(这里的旋转轴指的是空间中的任意一个方向，通常用一个单位向量表示这个旋转轴)。试想一下，我们可以让四元素的三个虚部表示旋转轴$n$，虚部表示旋转的角度$\theta$，是不是可以用来表示前述的角位移。But!!! 很遗憾，$n$和$\theta$并不是直接简单的存储在四元数中的，欲知真相如何，请看下述公式：<br>$\begin{aligned}q &amp;= [cos(\theta / 2)\ sin(\theta / 2)n] \\<br>&amp;= [cos(\theta / 2)\quad (sin(\theta / 2)n_x \ sin(\theta / 2)n_y \ sin(\theta / 2)n_z)]<br>\end{aligned}$</p>
+</li>
+<li><h5 id="3-3-负四元数"><a href="#3-3-负四元数" class="headerlink" title="3.3 负四元数"></a>3.3 负四元数</h5><p>四元数能够求负。做法很直接：直接将每个分量都变负，见如下公式：<br>$\begin{aligned}<br>-q &amp;= -[w \quad (x \quad y \quad z)] = [-w \quad (-x \quad -y \quad -z)] \\<br>&amp;= -[w \quad v] = [-w \quad -v]<br>\end{aligned}$<br>$q$和$-q$代表的角位移其实是相同的</p>
+</li>
+<li><h5 id="3-4-单位四元数"><a href="#3-4-单位四元数" class="headerlink" title="3.4 单位四元数"></a>3.4 单位四元数</h5><p>其实在几何意义上，存在着两个“单位”四元数。他们都表示没有角位移：$[1, 0]$和$[-1, 0]$。当$\theta$是360的偶数倍时，是第一种形式，$cos(\theta  / 2) = 1$, $\theta$是360的奇数倍时，是第二种形式, $cos(\theta / 2) = -1$。不管是哪一种 情况，都有$sin(\theta / 2) = 0$, 所以$n$值是无关紧要的。它的意义在于:<br>当旋转角$\theta$是360的整数倍时，方位并没有发生改变，因此旋转轴也是无关紧要的。<br>不过在数学上，只有一个单位四元数$[1, 0]$</p>
+</li>
+<li><h5 id="3-5-四元数的模"><a href="#3-5-四元数的模" class="headerlink" title="3.5 四元数的模"></a>3.5 四元数的模</h5><p>和复数一样，四元数也是有模的。记法和公式都和向量类似，如下公式：<br>$\begin{aligned} \left \| q \right \| &amp;= \left \| [w \quad (x \quad y \quad z)] \right \| = \sqrt{w^2 + x^2 + y^2 + z^2} \\<br>&amp;= \left \| [w \quad v] \right \| = \sqrt{w^2 + \left \| v \right \| ^2}<br>\end{aligned}$</p>
+</li>
+<li><h5 id="3-6-四元数的共轭和逆"><a href="#3-6-四元数的共轭和逆" class="headerlink" title="3.6 四元数的共轭和逆"></a>3.6 四元数的共轭和逆</h5><p>四元数的共轭和复数类似，记作$q^\ast$</p>
+</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/数学/" rel="tag"># 数学</a>
+          
+            <a href="/tags/图形学/" rel="tag"># 图形学</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/Unity3D-Shader学习-二-表面着色器结构.html" rel="next" title="Unity3D Shader学习(二)--表面着色器结构">
+                <i class="fa fa-chevron-left"></i> Unity3D Shader学习(二)--表面着色器结构
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/2018/DirectXLearn01.html" rel="prev" title="DirectX学习笔记(一) 环境搭建">
+                DirectX学习笔记(一) 环境搭建 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.png"
+                alt="zwting" />
+            
+              <p class="site-author-name" itemprop="name">zwting</p>
+              <p class="site-description motion-element" itemprop="description">记录学习的点点滴滴</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/zwting" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-四元数的记法"><span class="nav-number">1.</span> <span class="nav-text">1.四元数的记法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-复数"><span class="nav-number">2.</span> <span class="nav-text">2.复数</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#2-1复数"><span class="nav-number">2.1.</span> <span class="nav-text">2.1复数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-2-复数的加法、减法和乘法"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 复数的加法、减法和乘法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-3-共轭复数"><span class="nav-number">2.3.</span> <span class="nav-text">2.3 共轭复数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-4-求复数的模"><span class="nav-number">2.4.</span> <span class="nav-text">2.4 求复数的模</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-四元数"><span class="nav-number">3.</span> <span class="nav-text">3.四元数</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#3-1-四元数的介绍"><span class="nav-number">3.1.</span> <span class="nav-text">3.1 四元数的介绍</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-2-四元数来表示旋转"><span class="nav-number">3.2.</span> <span class="nav-text">3.2 四元数来表示旋转</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-3-负四元数"><span class="nav-number">3.3.</span> <span class="nav-text">3.3 负四元数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-4-单位四元数"><span class="nav-number">3.4.</span> <span class="nav-text">3.4 单位四元数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-5-四元数的模"><span class="nav-number">3.5.</span> <span class="nav-text">3.5 四元数的模</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-6-四元数的共轭和逆"><span class="nav-number">3.6.</span> <span class="nav-text">3.6 四元数的共轭和逆</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">zwting</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: true,
+        notify: true,
+        appId: 'GFPclSoVr9bwsYdouRGa3En7-gzGzoHsz',
+        appKey: 'aIGtjQtn4JVBXqiRIR3k4HVQ',
+        placeholder: 'Just go go',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

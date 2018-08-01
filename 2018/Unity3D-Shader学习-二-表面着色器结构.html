@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/fav_hd.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon_32x32.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon_16x16.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/favicon_32x32.png?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Unity3D,Shader," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Unity3D Shader学习(二)–表面着色器结构写在前面的话：  本博客是我学习Unity shader过程中所记录的笔记，前期的学习都是跟随unity官方文档来学习的  一.表面着色器的工作方式在表面着色器中，把需要的数据作为”表面函数”的输入，计算后用来初始化结构SurfaceOutput。下面就先来看看它的结构是什么样的123456789struct SurfaceOutput&amp;#12">
+<meta name="keywords" content="Unity3D,Shader">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Unity3D Shader学习(二)--表面着色器结构">
+<meta property="og:url" content="http://www.zuowting.top/2018/Unity3D-Shader学习-二-表面着色器结构.html">
+<meta property="og:site_name" content="有想法更要有行动">
+<meta property="og:description" content="Unity3D Shader学习(二)–表面着色器结构写在前面的话：  本博客是我学习Unity shader过程中所记录的笔记，前期的学习都是跟随unity官方文档来学习的  一.表面着色器的工作方式在表面着色器中，把需要的数据作为”表面函数”的输入，计算后用来初始化结构SurfaceOutput。下面就先来看看它的结构是什么样的123456789struct SurfaceOutput&amp;#12">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-08-01T11:50:31.127Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Unity3D Shader学习(二)--表面着色器结构">
+<meta name="twitter:description" content="Unity3D Shader学习(二)–表面着色器结构写在前面的话：  本博客是我学习Unity shader过程中所记录的笔记，前期的学习都是跟随unity官方文档来学习的  一.表面着色器的工作方式在表面着色器中，把需要的数据作为”表面函数”的输入，计算后用来初始化结构SurfaceOutput。下面就先来看看它的结构是什么样的123456789struct SurfaceOutput&amp;#12">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":true,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.zuowting.top/2018/Unity3D-Shader学习-二-表面着色器结构.html"/>
+
+
+
+
+
+  <title>Unity3D Shader学习(二)--表面着色器结构 | 有想法更要有行动</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">有想法更要有行动</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">事在人为</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.zuowting.top/2018/Unity3D-Shader学习-二-表面着色器结构.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="zwting">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="有想法更要有行动">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Unity3D Shader学习(二)--表面着色器结构</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-30T19:41:03+08:00">
+                2018-05-30
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于&#58;</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2018-08-01T19:50:31+08:00">
+                2018-08-01
+              </time>
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/Unity3D-Shader学习-二-表面着色器结构.html#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/Unity3D-Shader学习-二-表面着色器结构.html" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Unity3D-Shader学习-二-–表面着色器结构"><a href="#Unity3D-Shader学习-二-–表面着色器结构" class="headerlink" title="Unity3D Shader学习(二)–表面着色器结构"></a>Unity3D Shader学习(二)–表面着色器结构</h1><p>写在前面的话：</p>
+<blockquote>
+<p>本博客是我学习Unity shader过程中所记录的笔记，前期的学习都是跟随unity官方文档来学习的</p>
+</blockquote>
+<h4 id="一-表面着色器的工作方式"><a href="#一-表面着色器的工作方式" class="headerlink" title="一.表面着色器的工作方式"></a>一.表面着色器的工作方式</h4><p>在表面着色器中，把需要的数据作为”表面函数”的输入，计算后用来初始化结构<code>SurfaceOutput</code>。下面就先来看看它的结构是什么样的<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">SurfaceOutput</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    fixed3 Albedo;  <span class="comment">// diffuse color</span></span><br><span class="line">    fixed3 Normal;  <span class="comment">// tangent space normal, if written</span></span><br><span class="line">    fixed3 Emission;</span><br><span class="line">    half Specular;  <span class="comment">// specular power in 0..1 range</span></span><br><span class="line">    fixed Gloss;    <span class="comment">// specular intensity</span></span><br><span class="line">    fixed Alpha;    <span class="comment">// alpha for transparencies</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p><strong>特别说明一下: </strong> 在unity5中，表面着色器也可以使用基于物理的光照模型。内置的标准光照和标准镜面反射模型会使用下面的输出结构<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">SurfaceOutputStandard</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    fixed3 Albedo;      <span class="comment">// base (diffuse or specular) color</span></span><br><span class="line">    fixed3 Normal;      <span class="comment">// tangent space normal, if written</span></span><br><span class="line">    half3 Emission;</span><br><span class="line">    half Metallic;      <span class="comment">// 0=non-metal, 1=metal</span></span><br><span class="line">    half Smoothness;    <span class="comment">// 0=rough, 1=smooth</span></span><br><span class="line">    half Occlusion;     <span class="comment">// occlusion (default 1)</span></span><br><span class="line">    fixed Alpha;        <span class="comment">// alpha for transparencies</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">SurfaceOutputStandardSpecular</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    fixed3 Albedo;      <span class="comment">// diffuse color</span></span><br><span class="line">    fixed3 Specular;    <span class="comment">// specular color</span></span><br><span class="line">    fixed3 Normal;      <span class="comment">// tangent space normal, if written</span></span><br><span class="line">    half3 Emission;</span><br><span class="line">    half Smoothness;    <span class="comment">// 0=rough, 1=smooth</span></span><br><span class="line">    half Occlusion;     <span class="comment">// occlusion (default 1)</span></span><br><span class="line">    fixed Alpha;        <span class="comment">// alpha for transparencies</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<h4 id="二-表面着色器的编译指令"><a href="#二-表面着色器的编译指令" class="headerlink" title="二.表面着色器的编译指令"></a>二.表面着色器的编译指令</h4><p>表面着色器是放在<code>CGPROGRAM..ENDCG</code>代码块中的，和其他shader 所不同的主要有以下两点：</p>
+<ul>
+<li>必须被放置在<code>SubShader</code>代码块中，而不是在<code>Pass</code>块中</li>
+<li>必须使用<code>#pragma surface ...</code>指令来指定它的<code>surface</code>函数</li>
+</ul>
+<p><code>#pragma surface</code>指令的具体格式如下面所示：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> surface surfaceFunction lightModel [optionalparams]</span></span><br></pre></td></tr></table></figure></p>
+<p><strong><em>下面将会来细致介绍参数</em></strong></p>
+<h5 id="必选参数"><a href="#必选参数" class="headerlink" title="必选参数"></a>必选参数</h5><ul>
+<li><code>surfaceFunction</code>: 这个参数就是我们的表面函数了，它的函数签名是<code>void surf (Input IN, inout SurfaceOutput o)</code>。这里的<code>Input</code>类型是一个需要自己去定义的结构体(需要遵循它的标准，准确地说是去定制)。这个结构里面应该包含纹理坐标和表面函数所需要的一些额外字段。</li>
+<li><code>lightModel</code>: 光照模型，就是指定shader所使用的光照模型。内置的有基于物理的<code>Standard</code>和<code>StandardSpecular</code>,当然，也可以使用不基于物理的<code>Lambert(diffuse)</code>和<code>BlinnPhong(specular)</code>。</li>
+</ul>
+<h5 id="可选参数"><a href="#可选参数" class="headerlink" title="可选参数"></a>可选参数</h5><p>可选参数比较多，这里不一一列出来，需要<a href="https://docs.unity3d.com/Manual/SL-SurfaceShaders.html" target="_blank" rel="noopener">点我查看</a></p>
+<h5 id="表面着色器的输入结构"><a href="#表面着色器的输入结构" class="headerlink" title="表面着色器的输入结构"></a>表面着色器的输入结构</h5><p>表面着色器的输入结构<code>Input</code>通常有一个shader所需要的纹理。需要注意的是，纹理坐标字段的名字必须以<code>&quot;uv&quot;</code>开头(或者以<code>&quot;uv2&quot;</code>开头标识第二个纹理坐标)。<br>下面的列表展示了<code>Input</code>结构的可选额外字段</p>
+<ul>
+<li><code>float3 viewDir</code>: 顾名思义，这个字段表示了当前视角方向，即表示摄像机的正前方的向量。通常用来计算一些视差效果和边缘光的效果等。</li>
+<li><code>float4 : COLOR</code>: 带有<code>COLOR</code>语义的字段，表示每个顶点的颜色，顶点之间采用差值来确定颜色。</li>
+<li><code>float4 screenPos</code>: 表示屏幕空间的位置，主要用来反射效果或者屏幕空间的效果实现。</li>
+<li><code>float3 wordPos</code>: 在世界空间的位置。</li>
+<li><code>float3 worldRefl</code>: 如果<code>surface shader</code>不写<code>o.Normal</code>那么将表示世界空间中的反射向量。</li>
+<li><code>float3 worldNormal</code>: 如果<code>surface shader</code>不写<code>o.Normal</code>,那么用来表示世界空间中的法向量。</li>
+<li><code>float3 wroldRefl</code>: 如果<code>surface shader</code>写了<code>o.Normal</code>, 那么这个字段表示世界空间中的反射向量。如果想要获取逐像素法线贴图的反射向量，使用<code>WorldReflectionVector (IN, o.Normal)</code></li>
+<li><code>float3 worldNormal</code>: 如果<code>surface shader</code>写了<code>o.Normal</code>, 那么这个字段表示世界空间的法向量。如果想获取逐像素法线贴图的法向量，使用<code>WorldNormalVector (IN, o.Normal)</code> </li>
+</ul>
+<p>（未完，待续）</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Unity3D/" rel="tag"># Unity3D</a>
+          
+            <a href="/tags/Shader/" rel="tag"># Shader</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/Python解密m3u8视频.html" rel="next" title="Python解密m3u8视频">
+                <i class="fa fa-chevron-left"></i> Python解密m3u8视频
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/2018/Quaternion学习.html" rel="prev" title="Quaternion学习">
+                Quaternion学习 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.png"
+                alt="zwting" />
+            
+              <p class="site-author-name" itemprop="name">zwting</p>
+              <p class="site-description motion-element" itemprop="description">记录学习的点点滴滴</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/zwting" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Unity3D-Shader学习-二-–表面着色器结构"><span class="nav-number">1.</span> <span class="nav-text">Unity3D Shader学习(二)–表面着色器结构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#一-表面着色器的工作方式"><span class="nav-number">1.0.0.1.</span> <span class="nav-text">一.表面着色器的工作方式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二-表面着色器的编译指令"><span class="nav-number">1.0.0.2.</span> <span class="nav-text">二.表面着色器的编译指令</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#必选参数"><span class="nav-number">1.0.0.2.1.</span> <span class="nav-text">必选参数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#可选参数"><span class="nav-number">1.0.0.2.2.</span> <span class="nav-text">可选参数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#表面着色器的输入结构"><span class="nav-number">1.0.0.2.3.</span> <span class="nav-text">表面着色器的输入结构</span></a></li></ol></li></ol></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">zwting</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: true,
+        notify: true,
+        appId: 'GFPclSoVr9bwsYdouRGa3En7-gzGzoHsz',
+        appKey: 'aIGtjQtn4JVBXqiRIR3k4HVQ',
+        placeholder: 'Just go go',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
